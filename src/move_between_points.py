@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import rospy
+import os
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Point, Twist
 from tf.transformations import euler_from_quaternion
@@ -69,7 +70,7 @@ while not rospy.is_shutdown():
             goal.y = new_goal["y"]
             rospy.loginfo("Next position on [%f--%f]", goal.x, goal.y)
         else:
-            break
+             os.system("rosnode kill /speed_controller")
     else:
         rospy.loginfo("Going forward [delta_x=%f]", abs(delta_x))
         move.linear.x = 0.3
