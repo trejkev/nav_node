@@ -55,12 +55,15 @@ while not rospy.is_shutdown():
     delta_y = goal.y - y
 
     angle_to_goal = atan2(delta_y, delta_x)
-    delta_angle = angle_to_goal - theta
+    if angle_to_goal*theta>0:
+        delta_angle = angle_to_goal - theta
+    else
+        delta_angle = angle_to_goal + theta
 
     if abs(delta_angle) > 0.1:
-        rospy.loginfo("Turning right [delta_angle=%f]", delta_angle)
+        rospy.loginfo("Turning [delta_angle=%f]", delta_angle)
         move.linear.x = 0.0
-        move.angular.z = 0.3
+        move.angular.z = 0.5 * delta_angle
     elif abs(delta_x) < 0.1:
         move.linear.x = 0.0
         move.angular.z = 0.0
