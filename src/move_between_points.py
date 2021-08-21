@@ -17,6 +17,11 @@ x = 0.0
 y = 0.0
 theta = 0.0
 
+
+
+# watchdog variable
+cycles=0
+
 # newOdom extract pose from odom topic
 def newOdom(msg):
     global x
@@ -30,7 +35,7 @@ def newOdom(msg):
     (_, _, theta) = euler_from_quaternion([rot_q.x, rot_q.y, rot_q.z, rot_q.w])
 
 
-# Initialized the node 
+# Initialized the node
 rospy.init_node("speed_controller")
 
 sub = rospy.Subscriber(SUB_TOPIC, Odometry, newOdom)
@@ -52,20 +57,25 @@ else:
 
 # Calculate the deltas to move forward or turn right.
 while not rospy.is_shutdown():
+
     delta_x = goal.x - x
     delta_y = goal.y - y
 
     angle_to_goal = atan2(delta_y, delta_x)
-    if angle_to_goal*theta>0:
+    delta_angle = 0.0
+    if theta*angle_to_goal>0:
         delta_angle = angle_to_goal - theta
-    else
+    elif theta*angle_to_goal<0:
         delta_angle = angle_to_goal + theta
 
     if abs(delta_angle) > 0.1:
+	cycles=cycles+1
         rospy.loginfo("Turning [delta_angle=%f]", delta_angle)
         move.linear.x = 0.0
         move.angular.z = 0.5 * delta_angle
+	#move.angular.z = 0.07 * delta_angle
     elif abs(delta_x) < 0.1:
+	cycles=0
         move.linear.x = 0.0
         move.angular.z = 0.0
         if points:
@@ -80,8 +90,14 @@ while not rospy.is_shutdown():
             break
     else:
         rospy.loginfo("Going forward [delta_x=%f]", abs(delta_x))
+	cycles=0
         move.linear.x = 0.3
         move.angular.z = 0.0
+
+    if cycles>=30:
+        move.linear.x = -0.3
+	move.angular.z = 0.0
+	cycles=0
 
     pub.publish(move)
     rate.sleep()
