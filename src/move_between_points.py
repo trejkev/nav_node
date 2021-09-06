@@ -69,13 +69,13 @@ while not rospy.is_shutdown():
         delta_angle = angle_to_goal + theta
 
     if abs(delta_angle) > 0.1:
-    cycles=cycles+1
+        cycles=cycles+1
         rospy.loginfo("Turning [delta_angle=%f]", delta_angle)
         move.linear.x = 0.0
+        #move.angular.z = 0.5 * delta_angle
         move.angular.z = 0.5 * delta_angle
-    #move.angular.z = 0.07 * delta_angle
     elif abs(delta_x) < 0.1 and abs(delta_y) < 0.1:
-    cycles=0
+        cycles=0
         move.linear.x = 0.0
         move.angular.z = 0.0
         if points:
@@ -86,18 +86,18 @@ while not rospy.is_shutdown():
         else:
             move.linear.x = 0.0
             move.angular.z = 0.0
-            time.sleep(2)
+            time.sleep(30)
             break
     else:
         rospy.loginfo("Going forward [delta_x=%f]", abs(delta_x))
-    cycles=0
+        cycles=0
         move.linear.x = 0.3
         move.angular.z = 0.0
 
     if cycles>=30:
         move.linear.x = -0.3
-    move.angular.z = 0.0
-    cycles=0
+        move.angular.z = 0.0
+        cycles=0
 
     pub.publish(move)
     rate.sleep()
