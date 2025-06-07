@@ -1,0 +1,17 @@
+<launch>
+    <arg name="Coordinates_Dictionary" />
+    <arg name="Odometry_Topic"         />
+    <arg name="Velocity_Topic"         />
+    <arg name="x_position"             />
+    <arg name="y_position"             />
+    <arg name="z_rotation"             />
+
+    <node pkg="turtlebot3_nav" type="move_between_points.py" name="speed_controller">
+        <param name="CoordinatesDictionary" type="str"    value="$(arg Coordinates_Dictionary)" />
+        <param name="OdometryTopic"         type="str"    value="$(arg Odometry_Topic)"         />
+        <param name="VelocityTopic"         type="str"    value="$(arg Velocity_Topic)"         />
+        <param name="x_position"            type="double" value="$(arg x_position)"             />
+        <param name="y_position"            type="double" value="$(arg y_position)"             />
+        <param name="z_rotation"            type="double" value="$(arg z_rotation)"             />
+    </node>
+</launch>
